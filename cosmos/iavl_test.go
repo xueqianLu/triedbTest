@@ -100,12 +100,13 @@ func BenchmarkIAVLCommit(b *testing.B) {
 			logrus.WithField("version", latest).WithError(err).Error("cannot load version")
 			return
 		}
-		b.StartTimer()
+
 		for key, order := range orderData {
 			if err := db.Set([]byte(fmt.Sprintf("ux-%s", key)), order); err != nil {
 				b.Fatalf("cannot set key: %v", err)
 			}
 		}
+		b.StartTimer()
 		_, _, err = db.Commit()
 		if err != nil {
 			b.Fatalf("cannot commit: %v", err)

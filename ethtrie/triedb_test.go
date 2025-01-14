@@ -3,9 +3,7 @@ package ethtrie
 import (
 	"fmt"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/rawdb"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/ethdb"
 	"github.com/ethereum/go-ethereum/rlp"
 	"github.com/ethereum/go-ethereum/trie"
 	"github.com/xueqianLu/triedbtest/testsuite"
@@ -13,24 +11,9 @@ import (
 	"testing"
 )
 
-func getTrieDb(dir string, disk bool) ethdb.Database {
-	var db ethdb.Database
-	var err error
-	if !disk {
-		db = rawdb.NewMemoryDatabase()
-	} else {
-		db, err = rawdb.NewLevelDBDatabase(dir, 128, 1024, "", false)
-		if err != nil {
-			fmt.Printf("cannot create temporary database: %v", err)
-		}
-		return db
-	}
-	return rawdb.NewMemoryDatabase()
-}
-
 func TestHistoryTrie(t *testing.T) {
 	dir := t.TempDir()
-	db := getTrieDb(dir, true)
+	db := GetTrieDb(dir, true)
 	defer db.Close()
 
 	verifyUser := &types.StateAccount{
@@ -102,7 +85,7 @@ func TestHistoryTrie(t *testing.T) {
 
 func BenchmarkTrieCommit(b *testing.B) {
 	dir := b.TempDir()
-	db := getTrieDb(dir, true)
+	db := GetTrieDb(dir, true)
 	defer db.Close()
 
 	root := common.Hash{}

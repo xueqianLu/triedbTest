@@ -36,7 +36,7 @@ func NewRawDB(dir string, disk bool) (corestore.KVStoreWithBatch, error) {
 func NewIAVL(rawdb corestore.KVStoreWithBatch) *iavl.IavlTree {
 	pdb := db.NewPrefixDB(rawdb, []byte(StoreKeyUser))
 	opt := &iavl.Config{
-		CacheSize:              1_000,
+		CacheSize:              200_000,
 		SkipFastStorageUpgrade: true,
 	}
 	tree := iavl.NewIavlTree(pdb, log.NewNopLogger(), opt)
