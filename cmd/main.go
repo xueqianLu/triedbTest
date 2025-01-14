@@ -20,9 +20,9 @@ func main() {
 		var err error
 		switch *caseFlag {
 		case "eth":
-			err = testEth(*datacount, dir)
+			err = testEth(i, *datacount, dir)
 		default:
-			err = testCosmos(*datacount, dir)
+			err = testCosmos(i, *datacount, dir)
 		}
 		if err != nil {
 			logrus.WithField("test idx", i).WithError(err).Error("test failed")
