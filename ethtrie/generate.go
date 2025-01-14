@@ -4,21 +4,30 @@ import (
 	"fmt"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/ethereum/go-ethereum/rlp"
 	"github.com/google/uuid"
 	"math/big"
 )
 
-func generateAccount(count int) map[string]*types.StateAccount {
+func accountData(acc *types.StateAccount) []byte {
+	v, _ := rlp.EncodeToBytes(acc)
+	return v
+}
+
+func generateAccount(count int) (map[string]*types.StateAccount, map[string][]byte) {
 	randomPrefix := uuid.NewString()
 	d := make(map[string]*types.StateAccount)
+	dd := make(map[string][]byte)
 	for i := 0; i < count; i++ {
 		addr := fmt.Sprintf("%s%d", randomPrefix, i)
-		d[addr] = &types.StateAccount{
+		acc := &types.StateAccount{
 			CodeHash: []byte{},
 			Root:     common.HexToHash(fmt.Sprintf("%x", i+500)),
 			Nonce:    10022,
 			Balance:  big.NewInt(12339990),
 		}
+		d[addr] = acc
+		dd[addr] = accountData(acc)
 	}
-	return d
+	return d, dd
 }
