@@ -8,6 +8,7 @@ import (
 	"github.com/ethereum/go-ethereum/ethdb"
 	"github.com/ethereum/go-ethereum/rlp"
 	"github.com/ethereum/go-ethereum/trie"
+	"github.com/xueqianLu/triedbtest/testsuite"
 	"math/big"
 	"testing"
 )
@@ -41,11 +42,11 @@ func TestHistoryTrie(t *testing.T) {
 	verifyUserAddr := "122222222111111122"
 
 	root := common.Hash{}
-	snapSet := NewSnapshotSet()
+	snapSet := testsuite.NewSnapshotSet()
 	for i := 0; i < 100; i++ {
-		_, orderData := generateAccount(200000)
+		_, orderData := testsuite.GenerateAccount(200000)
 		verifyUser.Balance = new(big.Int).Add(verifyUser.Balance, big.NewInt(int64(i)))
-		orderData[verifyUserAddr] = accountData(verifyUser)
+		orderData[verifyUserAddr] = testsuite.AccountData(verifyUser)
 		tdb := trie.NewDatabase(db)
 		// open tree, and set commit data to it.
 		tree, err := trie.New(common.Hash{}, common.Hash{}, tdb)
@@ -75,9 +76,9 @@ func TestHistoryTrie(t *testing.T) {
 		root = newroot
 		snapSet.AddSnapshot(root, *verifyUser)
 	}
-	_, failed := snapSet.RangeSnapshot(func(sp snapshot) bool {
+	_, failed := snapSet.RangeSnapshot(func(sp testsuite.Snapshot) bool {
 		vdb := trie.NewDatabase(db)
-		tree, err := trie.New(common.Hash{}, sp.root, vdb)
+		tree, err := trie.New(common.Hash{}, sp.Root, vdb)
 		if err != nil {
 			t.Fatalf("cannot create trie: %v", err)
 		}
@@ -89,8 +90,8 @@ func TestHistoryTrie(t *testing.T) {
 		if err := rlp.DecodeBytes(d, &order); err != nil {
 			t.Fatalf("cannot decode order: %v", err)
 		}
-		if order.Balance.Cmp(sp.account.Balance) != 0 {
-			t.Fatalf("balance mismatch: have %v, want %v", order.Balance, sp.account.Balance)
+		if order.Balance.Cmp(sp.Account.Balance) != 0 {
+			t.Fatalf("balance mismatch: have %v, want %v", order.Balance, sp.Account.Balance)
 		}
 		return true
 	})
@@ -107,7 +108,7 @@ func BenchmarkTrieCommit(b *testing.B) {
 	root := common.Hash{}
 	for i := 0; i < b.N; i++ {
 		b.StopTimer()
-		_, orderData := generateAccount(200000)
+		_, orderData := testsuite.GenerateAccount(200000)
 		b.StartTimer()
 		tdb := trie.NewDatabase(db)
 		// open tree, and set commit data to it.
@@ -136,6 +137,10 @@ func BenchmarkTrieCommit(b *testing.B) {
 			b.Fatalf("cannot commit trie: %v", err)
 		}
 		root = newroot
+		b.StopTimer()
+		size, _ := testsuite.GetDirSize(dir)
+		b.Logf("dir size: %s", size.String())
+		b.StartTimer()
 	}
 	_ = root
 }

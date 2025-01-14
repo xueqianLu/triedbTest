@@ -1,4 +1,4 @@
-package ethtrie
+package testsuite
 
 import (
 	"fmt"
@@ -9,12 +9,12 @@ import (
 	"math/big"
 )
 
-func accountData(acc *types.StateAccount) []byte {
+func AccountData(acc *types.StateAccount) []byte {
 	v, _ := rlp.EncodeToBytes(acc)
 	return v
 }
 
-func generateAccount(count int) (map[string]*types.StateAccount, map[string][]byte) {
+func GenerateAccount(count int) (map[string]*types.StateAccount, map[string][]byte) {
 	randomPrefix := uuid.NewString()
 	d := make(map[string]*types.StateAccount)
 	dd := make(map[string][]byte)
@@ -27,7 +27,7 @@ func generateAccount(count int) (map[string]*types.StateAccount, map[string][]by
 			Balance:  big.NewInt(12339990),
 		}
 		d[addr] = acc
-		dd[addr] = accountData(acc)
+		dd[addr] = AccountData(acc)
 	}
 	return d, dd
 }

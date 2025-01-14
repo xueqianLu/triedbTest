@@ -5,10 +5,14 @@ import (
 	"cosmossdk.io/log"
 	"cosmossdk.io/store/v2/commitment/iavl"
 	"cosmossdk.io/store/v2/db"
-	"path/filepath"
 )
 
-func newIVAL(dir string, disk bool) *iavl.IavlTree {
+var (
+	StoreKeyUser  = "user-sk"
+	StoreKeyOrder = "order-sk"
+)
+
+func NewRawDB(dir string, disk bool) (corestore.KVStoreWithBatch, error) {
 	var (
 		err   error
 		rawdb corestore.KVStoreWithBatch
@@ -19,17 +23,20 @@ func newIVAL(dir string, disk bool) *iavl.IavlTree {
 		rawdb, err = db.NewDB(
 			db.DBTypeGoLevelDB,
 			"application",
-			filepath.Join(dir, "data"),
+			dir,
 			nil,
 		)
 		if err != nil {
-			panic(err)
+			return nil, err
 		}
 	}
+	return rawdb, nil
+}
 
+func NewIAVL(rawdb corestore.KVStoreWithBatch) *iavl.IavlTree {
 	pdb := db.NewPrefixDB(rawdb, []byte(StoreKeyUser))
 	opt := &iavl.Config{
-		CacheSize:              500_000,
+		CacheSize:              1_000,
 		SkipFastStorageUpgrade: true,
 	}
 	tree := iavl.NewIavlTree(pdb, log.NewNopLogger(), opt)

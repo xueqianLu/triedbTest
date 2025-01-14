@@ -1,30 +1,30 @@
-package ethtrie
+package testsuite
 
 import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 )
 
-type snapshot struct {
-	root    common.Hash
-	account types.StateAccount
+type Snapshot struct {
+	Root    common.Hash
+	Account types.StateAccount
 }
 
 type SnapshotSet struct {
-	snapshots []snapshot
+	snapshots []Snapshot
 }
 
 func NewSnapshotSet() *SnapshotSet {
 	return &SnapshotSet{
-		snapshots: make([]snapshot, 0, 1000),
+		snapshots: make([]Snapshot, 0, 1000),
 	}
 }
 
 func (s *SnapshotSet) AddSnapshot(root common.Hash, account types.StateAccount) {
-	s.snapshots = append(s.snapshots, snapshot{root, account})
+	s.snapshots = append(s.snapshots, Snapshot{root, account})
 }
 
-type VerifierFunc func(sp snapshot) bool
+type VerifierFunc func(sp Snapshot) bool
 
 func (s *SnapshotSet) RangeSnapshot(verifier VerifierFunc) (int, int) {
 	var success, failed int
