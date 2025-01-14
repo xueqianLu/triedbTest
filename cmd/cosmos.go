@@ -39,7 +39,7 @@ func testCosmos(count int, dir string) error {
 	logrus.WithFields(logrus.Fields{
 		"stage": "write data to tree",
 		"cost":  t2.Sub(t1).String(),
-	})
+	}).Info("time info")
 
 	_, _, err = db.Commit()
 	if err != nil {
@@ -51,12 +51,12 @@ func testCosmos(count int, dir string) error {
 	logrus.WithFields(logrus.Fields{
 		"stage": "tree commit",
 		"cost":  t3.Sub(t2).String(),
-	})
+	}).Info("time info")
 	size, _ := testsuite.GetDirSize(dir)
 	logrus.WithFields(logrus.Fields{
 		"stage":    "total",
 		"cost":     t3.Sub(t1).String(),
 		"dir size": size.String(),
-	})
+	}).Info("time info")
 	return nil
 }
