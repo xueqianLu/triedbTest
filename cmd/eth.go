@@ -10,6 +10,10 @@ import (
 	"time"
 )
 
+var (
+	root = common.Hash{}
+)
+
 func testEth(idx int, count int, dir string) error {
 	loger := logrus.WithField("idx", idx)
 
@@ -19,7 +23,7 @@ func testEth(idx int, count int, dir string) error {
 	_, orderData := testsuite.GenerateAccount(count)
 	tdb := trie.NewDatabase(db)
 	// open tree, and set commit data to it.
-	tree, err := trie.New(common.Hash{}, common.Hash{}, tdb)
+	tree, err := trie.New(common.Hash{}, root, tdb)
 	if err != nil {
 		loger.WithError(err).Error("cannot create trie")
 		return err
@@ -55,6 +59,7 @@ func testEth(idx int, count int, dir string) error {
 		loger.WithError(err).Error("cannot commit trie")
 		return err
 	}
+	root = newroot
 	t3 := time.Now()
 
 	loger.WithFields(logrus.Fields{
