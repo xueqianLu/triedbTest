@@ -15,7 +15,7 @@ var (
 func main() {
 	flag.Parse()
 
-	dir := filepath.Join("./", *caseFlag)
+	dir := filepath.Join("./", "data-"+*caseFlag)
 	for i := 0; i < *testTimes; i++ {
 		var err error
 		switch *caseFlag {
