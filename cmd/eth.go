@@ -3,9 +3,9 @@ package main
 import (
 	"fmt"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/ethdb"
 	"github.com/ethereum/go-ethereum/trie"
 	"github.com/sirupsen/logrus"
-	"github.com/xueqianLu/triedbtest/ethtrie"
 	"github.com/xueqianLu/triedbtest/testsuite"
 	"time"
 )
@@ -14,11 +14,8 @@ var (
 	root = common.Hash{}
 )
 
-func testEth(idx int, count int, dir string) error {
+func testEth(db ethdb.Database, idx int, count int, dir string) error {
 	loger := logrus.WithField("idx", idx)
-
-	db := ethtrie.GetTrieDb(dir, true)
-	defer db.Close()
 
 	_, orderData := testsuite.GenerateAccount(count)
 	tdb := trie.NewDatabase(db)

@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"github.com/sirupsen/logrus"
+	"github.com/xueqianLu/triedbtest/ethtrie"
 	"path/filepath"
 )
 
@@ -16,11 +17,15 @@ func main() {
 	flag.Parse()
 
 	dir := filepath.Join("./", "data-"+*caseFlag)
+
+	ethdb := ethtrie.GetTrieDb(dir, true)
+	defer ethdb.Close()
+
 	for i := 0; i < *testTimes; i++ {
 		var err error
 		switch *caseFlag {
 		case "eth":
-			err = testEth(i, *datacount, dir)
+			err = testEth(ethdb, i, *datacount, dir)
 		default:
 			err = testCosmos(i, *datacount, dir)
 		}

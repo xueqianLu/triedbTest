@@ -7,6 +7,7 @@ import (
 	"github.com/ethereum/go-ethereum/rlp"
 	"github.com/google/uuid"
 	"math/big"
+	"math/rand"
 )
 
 func AccountData(acc *types.StateAccount) []byte {
@@ -23,7 +24,7 @@ func GenerateAccount(count int) (map[string]*types.StateAccount, map[string][]by
 		acc := &types.StateAccount{
 			CodeHash: []byte{},
 			Root:     common.HexToHash(fmt.Sprintf("%x", i+500)),
-			Nonce:    10022,
+			Nonce:    uint64(rand.Intn(1000000)) + 10022,
 			Balance:  big.NewInt(12339990),
 		}
 		d[addr] = acc
