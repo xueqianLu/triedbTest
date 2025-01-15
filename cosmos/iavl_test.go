@@ -118,3 +118,43 @@ func BenchmarkIAVLCommit(b *testing.B) {
 		b.StartTimer()
 	}
 }
+
+func BenchmarkIAVLCommitCustom(b *testing.B) {
+	dir := b.TempDir()
+	rawdb, err := NewRawDB(dir, true)
+	if err != nil {
+		b.Fatalf("cannot create raw db: %v", err)
+	}
+	defer rawdb.Close()
+
+	for i := 0; i < b.N; i++ {
+		b.StopTimer()
+		db := NewIAVL(rawdb)
+		_, orderData := testsuite.GenerateCustom(200000)
+		latest, err := db.GetLatestVersion()
+		if err != nil {
+			logrus.WithError(err).Error("cannot get latest version")
+			return
+		}
+		if err := db.LoadVersion(latest); err != nil {
+			logrus.WithField("version", latest).WithError(err).Error("cannot load version")
+			return
+		}
+
+		for key, order := range orderData {
+			if err := db.Set([]byte(fmt.Sprintf("ux-%s", key)), order); err != nil {
+				b.Fatalf("cannot set key: %v", err)
+			}
+		}
+		b.StartTimer()
+		_, _, err = db.Commit()
+		if err != nil {
+			b.Fatalf("cannot commit: %v", err)
+		}
+		db.Close()
+		b.StopTimer()
+		size, _ := testsuite.GetDirSize(dir)
+		b.Logf("dir size: %s", size.String())
+		b.StartTimer()
+	}
+}

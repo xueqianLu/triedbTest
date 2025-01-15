@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-func testCosmos(idx int, count int, dir string) error {
+func testCosmos(orderData map[string][]byte, idx int, count int, dir string) error {
 	loger := logrus.WithField("idx", idx)
 	rawdb, err := cosmos.NewRawDB(dir, true)
 	if err != nil {
@@ -18,7 +18,6 @@ func testCosmos(idx int, count int, dir string) error {
 	defer rawdb.Close()
 
 	db := cosmos.NewIAVL(rawdb)
-	_, orderData := testsuite.GenerateAccount(count)
 	latest, err := db.GetLatestVersion()
 	if err != nil {
 		loger.WithError(err).Error("cannot get latest version")

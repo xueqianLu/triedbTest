@@ -127,3 +127,48 @@ func BenchmarkTrieCommit(b *testing.B) {
 	}
 	_ = root
 }
+
+func BenchmarkTrieCommitCustom(b *testing.B) {
+	dir := b.TempDir()
+	db := GetTrieDb(dir, true)
+	defer db.Close()
+
+	root := common.Hash{}
+	for i := 0; i < b.N; i++ {
+		b.StopTimer()
+		_, orderData := testsuite.GenerateCustom(200000)
+		b.StartTimer()
+		tdb := trie.NewDatabase(db)
+		// open tree, and set commit data to it.
+		tree, err := trie.New(common.Hash{}, common.Hash{}, tdb)
+		if err != nil {
+			b.Fatalf("cannot create trie: %v", err)
+		}
+		for key, order := range orderData {
+			if err := tree.TryUpdate([]byte(fmt.Sprintf("ux-%s", key)), order); err != nil {
+				b.Fatalf("cannot update trie: %v", err)
+			}
+		}
+		merged := trie.NewMergedNodeSet()
+		newroot, nodes, err := tree.Commit(true)
+		if err != nil {
+			b.Fatalf("cannot commit trie: %v", err)
+		}
+		if err = merged.Merge(nodes); err != nil {
+			b.Fatalf("cannot merge nodes: %v", err)
+		}
+
+		if err = tdb.Update(merged); err != nil {
+			b.Fatalf("cannot update trie: %v", err)
+		}
+		if err = tdb.Commit(newroot, false, nil); err != nil {
+			b.Fatalf("cannot commit trie: %v", err)
+		}
+		root = newroot
+		b.StopTimer()
+		size, _ := testsuite.GetDirSize(dir)
+		b.Logf("dir size: %s", size.String())
+		b.StartTimer()
+	}
+	_ = root
+}

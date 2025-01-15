@@ -14,10 +14,8 @@ var (
 	root = common.Hash{}
 )
 
-func testEth(db ethdb.Database, idx int, count int, dir string) error {
+func testEth(orderData map[string][]byte, db ethdb.Database, idx int, count int, dir string) error {
 	loger := logrus.WithField("idx", idx)
-
-	_, orderData := testsuite.GenerateAccount(count)
 	tdb := trie.NewDatabase(db)
 	// open tree, and set commit data to it.
 	tree, err := trie.New(common.Hash{}, root, tdb)
@@ -47,6 +45,7 @@ func testEth(db ethdb.Database, idx int, count int, dir string) error {
 		loger.WithError(err).Error("cannot merge node")
 		return err
 	}
+	loger.WithField("nodes count", nodes.Len()).Info("update nodes length")
 
 	if err = tdb.Update(merged); err != nil {
 		loger.WithError(err).Error("cannot update trie")

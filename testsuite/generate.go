@@ -10,6 +10,19 @@ import (
 	"math/rand"
 )
 
+func GenerateCustom(count int) (map[string]*types.StateAccount, map[string][]byte) {
+	prefix := uuid.NewString()
+	d := make(map[string]*types.StateAccount)
+	dd := make(map[string][]byte)
+	for i := 0; i < count; i++ {
+		ref := uuid.NewString()
+		addr := fmt.Sprintf("%s%d", prefix, i)
+		d[addr] = nil
+		dd[addr] = []byte(ref)
+	}
+	return d, dd
+}
+
 func AccountData(acc *types.StateAccount) []byte {
 	v, _ := rlp.EncodeToBytes(acc)
 	return v
