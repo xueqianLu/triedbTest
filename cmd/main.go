@@ -25,14 +25,13 @@ func main() {
 
 	orderdata := make(map[string][]byte)
 
-	switch *dataType {
-	case "custom":
-		_, orderdata = testsuite.GenerateCustom(*datacount)
-	default:
-		_, orderdata = testsuite.GenerateAccount(*datacount)
-	}
-
 	for i := 0; i < *testTimes; i++ {
+		switch *dataType {
+		case "custom":
+			_, orderdata = testsuite.GenerateCustom(*datacount)
+		default:
+			_, orderdata = testsuite.GenerateAccount(*datacount)
+		}
 		var err error
 		switch *caseFlag {
 		case "eth":
