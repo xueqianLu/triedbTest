@@ -19,7 +19,8 @@ func GenerateCustom(count int, datasize int) (map[string]*types.StateAccount, ma
 		d[addr] = nil
 
 		for j := 0; j < datasize; j++ {
-			hash := common.HexToHash(fmt.Sprintf("%x", (i+1)*100+5000*(1+j)))
+			uid := uuid.New()
+			hash := common.HexToHash(fmt.Sprintf("%x", uid))
 			bytes, _ := rlp.EncodeToBytes(hash)
 			dd[addr] = append(dd[addr], bytes...)
 		}
