@@ -11,6 +11,7 @@ import (
 var (
 	caseFlag  = flag.String("case", "eth", "db type to test")
 	dataType  = flag.String("data", "custom", "data type to test , custom or eth")
+	dataSize  = flag.Int("size", 1, "custom data size, 1 is 32bytes")
 	datacount = flag.Int("count", 200000, "data count in one test")
 	testTimes = flag.Int("N", 100, "test times")
 )
@@ -28,7 +29,7 @@ func main() {
 	for i := 0; i < *testTimes; i++ {
 		switch *dataType {
 		case "custom":
-			_, orderdata = testsuite.GenerateCustom(*datacount)
+			_, orderdata = testsuite.GenerateCustom(*datacount, *dataSize)
 		default:
 			_, orderdata = testsuite.GenerateAccount(*datacount)
 		}

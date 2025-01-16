@@ -10,16 +10,20 @@ import (
 	"math/rand"
 )
 
-func GenerateCustom(count int) (map[string]*types.StateAccount, map[string][]byte) {
+func GenerateCustom(count int, datasize int) (map[string]*types.StateAccount, map[string][]byte) {
 	prefix := uuid.NewString()
 	d := make(map[string]*types.StateAccount)
 	dd := make(map[string][]byte)
 	for i := 0; i < count; i++ {
-		hash := common.HexToHash(fmt.Sprintf("%x", i+500))
 		addr := fmt.Sprintf("%s%d", prefix, i)
 		d[addr] = nil
-		bytes, _ := rlp.EncodeToBytes(hash)
-		dd[addr] = bytes
+
+		for j := 0; j < datasize; j++ {
+			hash := common.HexToHash(fmt.Sprintf("%x", (i+1)*100+5000*(1+j)))
+			bytes, _ := rlp.EncodeToBytes(hash)
+			dd[addr] = append(dd[addr], bytes...)
+		}
+
 	}
 	return d, dd
 }
