@@ -15,10 +15,11 @@ func GenerateCustom(count int) (map[string]*types.StateAccount, map[string][]byt
 	d := make(map[string]*types.StateAccount)
 	dd := make(map[string][]byte)
 	for i := 0; i < count; i++ {
-		ref := uuid.NewString()
+		hash := common.HexToHash(fmt.Sprintf("%x", i+500))
 		addr := fmt.Sprintf("%s%d", prefix, i)
 		d[addr] = nil
-		dd[addr] = []byte(ref)
+		bytes, _ := rlp.EncodeToBytes(hash)
+		dd[addr] = bytes
 	}
 	return d, dd
 }
